@@ -150,14 +150,18 @@ class Card(object):
 
     def sameSuit(self, other):
         """Returns True if both cards are the same suit."""
+        if type(other) != type(self):
+            raise TypeError(f"Can't compare {type(other)} to a Card.")
         if not self.isShowing and not other.isShowing:
-            raise RuleError('card is not showing, you can not use same_suit()')
+            raise RuleError('card is not showing, you can not use sameSuit()')
         return self.suit == other.suit
 
     def sameRank(self, other):
         """Returns True if both cards are the same rank."""
+        if type(other) != type(self):
+            raise TypeError(f"Can't compare {type(other)} to a Card.")
         if not self.isShowing and not other.isShowing:
-            raise RuleError('card is not showing, you can not use same_rank()')
+            raise RuleError('card is not showing, you can not use sameRank()')
         return self.rank == other.rank
 
     @property
@@ -166,6 +170,7 @@ class Card(object):
         if not self.isShowing:
             raise RuleError('card is not showing, you can not use is_face_card()')
         return self.__isFacecard
+
     @property
     def isAce(self):
         """Returns True if the card is an ace."""
@@ -195,11 +200,11 @@ class Card(object):
         return self.__suit
 
     @suit.setter
-    def suite(self, newSuit):
+    def suit(self, newSuit):
         if newSuit in Card.suits:
             self.__suit = newSuit
         else:
-            raise ValueError(f'{newSuit} must be in {Card.suites}')
+            raise ValueError(f'{newSuit} must be in {Card.suits}')
 
     @property
     def name(self):
@@ -259,6 +264,7 @@ class CardTester(unittest.TestCase):
         c3.flip()
         c4.flip()
 
+        self.assertTrue(c1 == c1, 'Identical cards should be equal.')
         self.assertTrue(c1 == c2, 'Identical cards should be equal.')
         self.assertFalse(c1 == c3, 'Cards with the same suit are not necessarily equal.')
         self.assertFalse(c3 == c4, 'Cards with the same value are not necessarily equal.')
@@ -270,6 +276,12 @@ class CardTester(unittest.TestCase):
         self.assertTrue(c1.sameSuit(c2), 'Identical cards have the same suit.')
         self.assertTrue(c1.sameSuit(c4), 'Two spades should have the same suit.')
         self.assertFalse(c1.sameSuit(c3), 'Spades and hearts should not be equal')
+
+    def test_setter(self):
+        c1 = Card('10', 'diamonds')
+        c1.suit = 'clubs'
+        c1.flip()
+        self.assertEqual(c1.suit, 'clubs')
 
 
 if __name__ == '__main__':
